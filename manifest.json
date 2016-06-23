@@ -1,0 +1,22 @@
+{
+    "name": "jx3.activator",
+    "version": "1.0",
+    "description": "Chrome extension for activate jx3",
+    "manifest_version": 2,
+    "icons": {
+        "16": "img/favicon16.png",
+        "48": "img/favicon48.png",
+        "128": "img/icon128.ico"
+    },
+    "browser_action": {
+        "default_icon": "img/favicon16.png",
+        "default_popup": "popup.html",
+        "default_title": "Chrome extension for weibo. Powered by Leo."
+    },
+    "background": {
+        "scripts": ["js/notification.js", "js/util.js", "js/activator.js", "js/loginCheck.js", "js/fetchKeys.js", "background.js"],
+        "persistent": true
+    },
+    "permissions": ["<all_urls>", "cookies", "notifications", "storage"],
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
