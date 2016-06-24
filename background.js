@@ -3,7 +3,7 @@ var Background = {};
 Background.constant = {
 	CookieExistsMinute: 60,
 	StartHour: 11,
-	StartMinute: 35,
+	StartMinute: 55,
 	intervalTime: 10
 };
 
@@ -40,8 +40,8 @@ Background.checkTime = function () {
 
 document.addEventListener("DOMContentLoaded", function (event) {
 	setInterval(function () {
-		Util.log(Util.LOGLEVEL.INFO, "check if it is time to do activator.");
 		if (!Background.isRunning && Background.checkTime()) {
+			Util.log(Util.LOGLEVEL.INFO, "running.");
 			Background.execute();
 		}
 	}, Background.constant.intervalTime * 1000);

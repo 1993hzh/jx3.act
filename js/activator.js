@@ -26,10 +26,9 @@ Activator.sendRequest = function (key, callback) {
 			Activator.const.isSucceed = true;
 			var notification = new Notification(null, "成功激活！");
 			notification.execute();
-		} else {
-			if (callback) {
-				callback(result.tips);
-			}
+		}
+		if (callback) {
+			callback(result.tips);
 		}
 	});
 }

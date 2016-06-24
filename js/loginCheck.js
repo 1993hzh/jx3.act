@@ -3,13 +3,14 @@ var LoginCheck = {};
 LoginCheck.cookie = {
 	url: "http://xoyo.com/",
 	name: "xoyokey",
-	endHour: 12,
+	endHour: 11,// TODO
 	endMinute: 20
 };
 
 LoginCheck.execute = function (callback) {
 	Util.cookie.getCookie(LoginCheck.cookie.url, LoginCheck.cookie.name, function (cookie) {
 		if (!cookie) {
+			Util.log(Util.LOGLEVEL.ERROR, "cookie is expired.");
 			LoginCheck.sendLoginNotification("cookie已过期，请重新登录！");
 		} else {
 			Util.log(Util.LOGLEVEL.INFO, "no need to re-login.");
@@ -23,6 +24,8 @@ LoginCheck.isExpire = function (expire, callback) {
 	var expireTime = new Date(expire * 1000);
 
 	if (expireTime < dueTime) {
+		Util.log(Util.LOGLEVEL.ERROR, "cookie is going to expire.");
+		
 		// remove cookie
 		Util.cookie.removeCookie(LoginCheck.cookie.url, LoginCheck.cookie.name, function (cookie) {
 			if (!cookie) {

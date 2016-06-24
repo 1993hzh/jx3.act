@@ -26,7 +26,7 @@ Util.cookie = {
         });
     },
 
-    removeCookie: function (url, name, callback) {
+    removeCookie: function (url, cookieName, callback) {
         chrome.cookies.remove({
             "url": url,
             "name": cookieName

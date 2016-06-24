@@ -1,27 +1,39 @@
 var FetchKeys = {};
 
+FetchKeys.jx3PublicUrl = "";
+
 FetchKeys.execute = function (callback) {
 	var sogou = "http://weixin.sogou.com/weixin?query=ksjianwang3";
+	if (FetchKeys.jx3PublicUrl !== "") {
+		Util.log(Util.LOGLEVEL.INFO, "get cached jx3 public url!");
+		FetchKeys.callback(callback, FetchKeys.jx3PublicUrl);
+		return;
+	}
+
 	Util.sendAjax(sogou, function (xhr) {
 		var publicUrl = FetchKeys.parseSogouHtml(FetchKeys.toHtml(xhr.responseText));
 		if (!publicUrl) {
 			Util.log(Util.LOGLEVEL.ERROR, "cannot find jx3 url from sogou!");
 			return;
 		}
+		FetchKeys.jx3PublicUrl = publicUrl;
+		FetchKeys.callback(callback, publicUrl);
+	});
+};
 
-		Util.sendAjax(publicUrl, function (xhr) {
-			var passageUrl = FetchKeys.parsePublicPassageHtml(FetchKeys.toHtml(xhr.responseText));
-			if (!passageUrl) {
-				Util.log(Util.LOGLEVEL.ERROR, "cannot find any passage url from jx3 public account!");
-				return;
+FetchKeys.callback = function (callback, url) {
+	Util.sendAjax(url, function (xhr) {
+		var passageUrl = FetchKeys.parsePublicPassageHtml(FetchKeys.toHtml(xhr.responseText));
+		if (!passageUrl) {
+			Util.log(Util.LOGLEVEL.ERROR, "cannot find any passage url from jx3 public account!");
+			return;
+		}
+
+		Util.sendAjax(passageUrl, function (xhr) {
+			var keys = FetchKeys.parseDetailHtml(FetchKeys.toHtml(xhr.responseText));
+			if (callback) {
+				callback(keys);
 			}
-
-			Util.sendAjax(passageUrl, function (xhr) {
-				var keys = FetchKeys.parseDetailHtml(FetchKeys.toHtml(xhr.responseText));
-				if (callback) {
-					callback(keys);
-				}
-			});
 		});
 	});
 };
@@ -41,21 +53,29 @@ FetchKeys.parseDetailHtml = function (html) {
 };
 
 FetchKeys.parsePublicPassageHtml = function (html) {
-	var length = html.scripts.length;
-	var target = html.scripts[length - 1];
-	var text = target.innerHTML;
-	var start = text.indexOf("'");
-	var end = text.lastIndexOf("'");
+	try {
+		var length = html.scripts.length;
+		var target = html.scripts[length - 1];
+		var text = target.innerHTML;
+		var start = text.indexOf("'");
+		var end = text.lastIndexOf("'");
 
-	var json = text.substring(start + 1, end);
-	var json = json.replaceAll("&quot;", "'");
+		var json = text.substring(start + 1, end);
+		var json = json.replaceAll("&quot;", "'");
 
-	var j = JSON.parse("\"" + json + "\"");
-	var result = eval("(" + j + ")");
+		var j = JSON.parse("\"" + json + "\"");
+		var result = eval("(" + j + ")");
+	} catch (e) {
+		FetchKeys.jx3PublicUrl = "";
+		Util.log(Util.LOGLEVEL.ERROR, "parse jx3 passage list html failed: " + e + ", clear the jx3PublicUrl cache!");
+		return;
+	}
+
 	var rawUrl = result.list[0].app_msg_ext_info.content_url;
 
 	var publishTime = result.list[0].comm_msg_info.datetime;
 	if (new Date(publishTime * 1000).getDate() !== new Date().getDate()) {
+		Util.log(Util.LOGLEVEL.ERROR, "no today's passage!");
 		return;
 	}
 
