@@ -1,7 +1,6 @@
 var Background = {};
 
 Background.constant = {
-	CookieExistsMinute: 60,
 	StartHour: 11,
 	StartMinute: 55,
 	intervalTime: 10
@@ -32,7 +31,7 @@ Background.getStartTime = function () {
 Background.checkTime = function () {
 	var now = new Date();
 	var startTime = Background.getStartTime();
-	if (now - startTime > 0 && now.getTime() - startTime.getTime() < Background.constant.CookieExistsMinute * 60 * 1000) {
+	if (now - startTime > 0) {
 		return true;
 	}
 	return false;

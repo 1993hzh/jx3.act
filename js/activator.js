@@ -15,7 +15,8 @@ Activator.execute = function (keys, index) {
 			});
 			Activator.execute(keys, ++index);
 		}
-	}, 500); // delay for 1s
+	}, 500); // delay for 0.5s
+	Background.isRunning = false;
 };
 
 Activator.sendRequest = function (key, callback) {
@@ -27,8 +28,6 @@ Activator.sendRequest = function (key, callback) {
 			var notification = new Notification(null, "成功激活！");
 			notification.execute();
 		}
-		if (callback) {
-			callback(result.tips);
-		}
+		callback(result.tips);
 	});
 }

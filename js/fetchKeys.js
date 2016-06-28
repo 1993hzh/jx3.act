@@ -49,6 +49,7 @@ FetchKeys.parseDetailHtml = function (html) {
 		}
 		keys.push(key);
 	}
+	Util.log(Util.LOGLEVEL.INFO, "get keys: " + keys);
 	return keys;
 };
 
